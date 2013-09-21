@@ -1,0 +1,23 @@
+" source $VIMRUNTIME/mswin.vim
+if has("gui_running")
+colorscheme murphy
+else
+colorscheme murphy
+endif
+set modeline
+set ignorecase
+set smartcase
+set incsearch
+set expandtab
+" set hlsearch
+set scrolloff=5
+set showmatch
+set autoindent
+set tabstop=8
+set shiftwidth=2
+
+syntax on             " Enable syntax highlighting
+filetype on           " Enable filetype detection
+" filetype indent on    " Enable filetype-specific indenting
+filetype plugin on    " Enable filetype-specific plugins
+

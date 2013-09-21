@@ -1,0 +1,57 @@
+# Either run vagrant or manually link Gemfile* to salt/salt/railsapps/files/ when Gemfile is changed
+
+source 'https://rubygems.org'
+
+gem 'rails', '1.2.6'
+
+gem 'image_science', '1.2.4'
+# drags in RubyInLIne which drags in ZenTest, which has a gemsepc in 4.3.4 that breaks in all but the most current rubygems (author refuses to fix)
+gem 'ZenTest', '4.3.3'  # '~> 4.3'
+
+# also in environment.rb because of passenger preloading
+gem 'mysql', '2.8.1'
+
+gem 'json', '~> 1.5.5'
+
+gem 'rake', '~> 0.9'
+
+gem 'rdoc'
+
+gem 'rdoc-data'
+# then  rdoc-data --install
+
+group :development do
+  gem 'bullet', '1.7.6'
+  gem 'capistrano', '2.11.2'
+  gem 'cgi_multipart_eof_fix', '2.5.0'
+  gem 'daemon_controller', '1.0.0'
+  gem 'diff-lcs', '1.1.3'
+  gem 'fastthread', '1.0.7'
+  gem 'gem_plugin', '0.2.3'
+  gem 'highline', '1.6.11'
+  gem 'hoe', '2.14.0'
+  gem 'linecache', '0.46'
+  gem 'mongrel', '1.1.5'
+  gem 'needle', '1.3.0'
+  gem 'net-scp', '1.0.4'
+  gem 'net-sftp', '2.0.5'
+  gem 'net-ssh', '2.3.0'
+  gem 'net-ssh-gateway', '1.1.0'
+  gem 'passenger', '3.0.11'
+  gem 'production_log_analyzer', '1.5.1'
+  gem 'rack', '1.2.4'
+  gem 'rails_analyzer_tools', '1.4.0'
+  gem 'rbx-require-relative', '0.0.9'
+  gem 'ruby-debug-base', '0.10.4'
+  gem 'ruby-debug-ide', '0.4.9'
+  gem 'rubyforge', '0.4.5'
+  gem 'SyslogLogger', '1.4.0'
+end
+
+group :test do
+  gem 'rcov', '0.9.11'
+  gem 'rspec', '1.1.12'
+  gem 'syntax' 			# syntax highlighting on rspec output
+  gem 'launchy', '>= 2.0.0'     # opsys independent launch browser
+  gem 'rspec-rails', '1.1.12'
+end

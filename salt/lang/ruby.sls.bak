@@ -1,0 +1,106 @@
+# 
+# ruby deps
+# 
+
+rbenv_deps:
+  pkg.installed:
+    - names:
+      - git
+      - build-essential
+      - openssl
+      - curl
+      - zlib1g
+      - zlib1g-dev
+      - libssl-dev
+      - libyaml-dev
+      - libsqlite3-0
+      - libsqlite3-dev
+      - sqlite3
+      - libxml2-dev
+      - libxslt1-dev
+      - autoconf
+      - libc6-dev
+      - libncurses5-dev
+      - automake
+      - libtool
+      - bison
+      - subversion
+
+# 
+# rbenv and ruby-build installation
+# 
+
+{{ pillar['homedir'] }}/.rbenv:
+  file.directory:
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - makedirs: True
+
+https://github.com/sstephenson/rbenv.git:
+  git.latest:
+    - runas: {{ pillar['username'] }}
+    - rev: master
+    - target: {{ pillar['homedir'] }}/.rbenv
+    - force: True
+    - require:
+      - pkg: rbenv_deps
+      - file: {{ pillar['homedir'] }}/.rbenv
+
+https://github.com/sstephenson/ruby-build.git:
+  git.latest:
+    - runas: {{ pillar['username'] }}
+    - rev: master
+    - target: {{ pillar['homedir'] }}/.rbenv/plugins
+    - force: True
+    - require:
+      - git: https://github.com/sstephenson/rbenv.git
+      - file: {{ pillar['homedir'] }}/.rbenv
+
+adjust_profile:
+  file.append:
+    - name: {{ pillar['homedir'] }}/.profile
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - text:
+      - export PATH="$HOME/.rbenv/bin:$PATH"
+      - eval "$(rbenv init -)"
+    - require:
+      - git: https://github.com/sstephenson/rbenv.git
+
+
+#
+# ruby installation
+#
+
+# this is currently not working
+# ruby-{{ pillar['ruby-version'] }}:
+#   rbenv.installed:
+#     - default: True
+#     - require:
+#       - git: https://github.com/sstephenson/ruby-build.git
+
+install_ruby:
+  cmd.run:
+    - name: {{ pillar['homedir'] }}/.rbenv/bin/rbenv install {{ pillar['ruby-version'] }}
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - require:
+      - git: https://github.com/sstephenson/ruby-build.git
+
+rehash:
+  cmd.run:
+    - name: {{ pillar['homedir'] }}/.rbenv/bin/rbenv rehash
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - require:
+      - cmd: install_rbenv
+
+set-global:
+  cmd.run:
+    - name: {{ pillar['homedir'] }}/.rbenv/bin/rbenv global {{ pillar['ruby-version'] }}
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - require:
+      - cmd: rehash
+
+      

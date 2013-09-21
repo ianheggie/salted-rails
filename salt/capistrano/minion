@@ -1,0 +1,14 @@
+# Standard masterless salt minion set-up
+master: localhost
+file_client: local
+state_auto_order: True
+
+file_roots:
+  base:
+    - /srv/salt/capistrano
+    - /srv/salt
+
+pillar_roots:
+  base:
+    - /srv/pillar/capistrano
+    - /srv/pillar
