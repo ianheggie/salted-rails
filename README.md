@@ -29,6 +29,7 @@ And then adjust your Vagrantfile as follows:
     vagrant_helper = SaltedRails::VagrantHelper.new(File.dirname(__FILE__))
     Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vagrant_helper.configure_vagrant(config)
+      vagrant_helper.configure_ubuntu_mirror(config, 'mirror')  # best (ping not bandwidth?) mirror
       vagrant_helper.configure_digital_ocean(config)
       vagrant_helper.configure_salt(config)
       vagrant_helper.configure_ports(config)
@@ -44,6 +45,12 @@ You can add configuration that applies to all your projects to `~/.vagrant.d/Vag
         provider.api_key = 'your key'
       end
     end
+
+The ubuntu_mirror value can also be:
+* 'mirror' - Configures mirror: option to auto select from http://mirrors.ubuntu.com/mirrors.txt
+* 'internode' - an australian ISP (mine ;)
+* a country code - eg 'au', 'uk', 'us' etc
+* url of mirror - specify the full url (in the same format as mirrors.txt above)
 
 ### Capistrano
 

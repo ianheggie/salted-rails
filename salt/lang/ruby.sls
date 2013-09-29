@@ -20,6 +20,7 @@ rbenv-deps:
       - libreadline-dev
       - libsqlite3-0
       - libsqlite3-dev
+      - sqlite3
       - libssl-dev 
       - libtool
       - libxml2-dev 
@@ -27,7 +28,6 @@ rbenv-deps:
       - libyaml-dev
       - openssl
       - python-software-properties 
-      - sqlite3
       - subversion
       - zlib1g
       - zlib1g-dev 

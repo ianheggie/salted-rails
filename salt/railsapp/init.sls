@@ -1,3 +1,6 @@
 include:
+  - railsapp.packages
   - railsapp.gems
-  - railsapp.database
+{%- if ('mysql' in pillar['gems']) or ('mysql2' in pillar['gems']) %}
+  - railsapp.mysql_database
+{%- endif %}

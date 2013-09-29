@@ -27,11 +27,16 @@ class SaltedRails < SaltedRailsBase
     def configure_vagrant(config)
       config.vm.box = 'UbuntuCloud_12.04_32bit'
       config.vm.box_url = 'http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-vagrant-i386-disk1.box'
-      config.ssh.private_key_path = '~/.ssh/id_rsa'
-      config.ssh.forward_agent = true
     end
 
-    def configure_digital_ocean(config)
+    def configure_ubuntu_mirror(config, mirror = 'mirror://mirrors.ubuntu.com/mirrors.txt')
+      config.vm.provision "shell" do |s|
+        s.path = @gem_root + 'salt/bin/change_mirror.sh'
+        s.args = "'#{mirror}'"
+      end
+    end
+
+    def configure_digital_ocean(config, private_key_path = '~/.ssh/id_rsa', disable_vagrant_sync = true)
       @logger.info 'Configuring digital ocean provider'  if @logger
       config.vm.provider :digital_ocean do |provider, override|
         override.ssh.username = 'vagrant'
@@ -39,21 +44,25 @@ class SaltedRails < SaltedRailsBase
         override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
         provider.image = 'Ubuntu 12.04 x32'
         provider.region = 'San Francisco 1'
-        #override.vm.synced_folder '.', '/vagrant', :disabled => true
         provider.ca_path = '/etc/ssl/certs/ca-certificates.crt' if File.exist?('/etc/ssl/certs/ca-certificates.crt')
+        override.vm.synced_folder '.', '/vagrant', :disabled => true if disable_vagrant_sync
+        override.ssh.private_key_path = private_key_path
+        @private_key_name = 'Vagrant ' + private_key_path.sub(/~\//, '').sub(/\.ssh\//, '').sub(/^id_/, '').gsub(/\W+/, ' ')
+        provider.ssh_key_name = @private_key_name if @private_key_name
+        override.ssh.forward_agent = true
       end
     end
 
     def configure_salt(config)
       pillarize_application_configuration
-      config.vm.synced_folder @rails_root + 'tmp/salt/', '/srv/salt/'
-      config.vm.synced_folder @rails_root + 'tmp/pillar/', '/srv/pillar/'
+      config.vm.synced_folder salt_root + 'salt/', '/srv/salt/'
+      config.vm.synced_folder salt_root + 'pillar/', '/srv/pillar/'
       # Bootstrap salt
       ## config.vm.provision :shell, :inline => 'salt-call --version || wget -O - http://bootstrap.saltstack.org | sudo sh'
       # Provisioning #2: masterless highstate call
       config.vm.provision :salt do |salt|
         @logger.info 'Configuring salt provisioner'  if @logger
-        salt.minion_config = @gem_root + 'salt/vagrant/minion'
+        salt.minion_config = salt_root + 'salt/vagrant/minion'
         salt.run_highstate = true
         salt.verbose = true
       end
@@ -69,7 +78,7 @@ class SaltedRails < SaltedRailsBase
     def configure_gui(vm_config)
       vm_config.vm.boot_mode == :gui 
       vm_config.vm.provision :salt do |salt|
-        salt.minion_config = @gem_root + 'salt/vagrant/gui_minion'
+        salt.minion_config = salt_root + 'salt/vagrant/gui_minion'
       end
     end
 
@@ -78,6 +87,10 @@ class SaltedRails < SaltedRailsBase
     end
 
     private
+
+    def salt_root
+      @salt_root ||= @rails_root + (File.directory?(@rails_root + 'salt/salt') ? 'salt/' : 'tmp/')
+    end
 
     # Add ruby version and gemfiles
     
@@ -135,14 +148,14 @@ class SaltedRails < SaltedRailsBase
           app_config = {
             'database' => database_conf,
             'ruby-version' => ruby_version,
-            'packages' => { }
+            'gems' => { }
             }
           database_conf.each do |key, details|
-            app_config['packages'][details['adapter']] = true
+            app_config['gems'][details['adapter']] = true
           end
-          #File.foreach(gemfile) do |line|
-          #  app_config['packages']['mysql'] ||= (line =~ /^\s*gem\s*['"]mysql2?['"]/)
-          #end
+          File.foreach(gemfile) do |line|
+            app_config['gems'][$1] = true if (line =~ /^\s*gem\s*['"]([^'"]+)/)
+          end
           f_out.puts app_config.to_yaml
         end
       else

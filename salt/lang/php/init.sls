@@ -4,7 +4,9 @@ php:
     - names:
       - php5-fpm
       - php5-cli
+{%- if ('mysql' in pillar['gems']) or ('mysql2' in pillar['gems']) %}
       - php5-mysql
+{%- endif %}
       - php5-gd
       - php5-curl
   service:
