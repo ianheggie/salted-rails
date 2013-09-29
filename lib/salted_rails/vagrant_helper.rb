@@ -3,7 +3,9 @@
 #
 # Example Vagrantfile:
 #
-# require File.dirname(__FILE__) + '/vendor/salted-rails/lib/salted_rails/vagrant_helper.rb'
+# #require File.dirname(__FILE__) + '/vendor/salted-rails/lib/salted_rails/vagrant_helper.rb'
+# # if installed as a plugin into vagrant:
+# require 'salted_rails/vagrant_helper'
 #
 # vagrant_helper = SaltedRails::VagrantHelper.new(File.dirname(__FILE__), true)
 #
