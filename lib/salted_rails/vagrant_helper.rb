@@ -5,8 +5,9 @@
 require 'erb'
 require 'yaml'
 require 'fileutils'
+require "salted_rails_base"
 
-module SaltedRails
+class SaltedRails < SaltedRailsBase
   class VagrantHelper
 
     def initialize(rails_root, debug = false)

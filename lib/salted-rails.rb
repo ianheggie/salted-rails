@@ -1,5 +1,8 @@
 require "salted_rails_base"
+require "salted_rails/version"
 
 class SaltedRails < SaltedRailsBase
-  VERSION = "0.0.2"
+  name "Salted Rails"
 end
+
+
