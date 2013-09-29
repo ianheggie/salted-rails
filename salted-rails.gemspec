@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["ian@heggie.biz"]
   spec.description   = %q{Provision rails using salt to vagrant or capistrano controlled systems}
   spec.summary       = %q{Provision rails using salt to vagrant or capistrano controlled systems. Uses details from .ruby-version, config/database.yml, Gemfile and Gemfile.lock to configure system}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/ianheggie/salted-rails"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
