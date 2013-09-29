@@ -46,3 +46,6 @@ website/www/.sass-cache
 website/www/build
 website/www/Rakefile
 
+# Dynamically created file
+/salt/railsapp/files
+/pillar/application.sls
