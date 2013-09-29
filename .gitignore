@@ -49,3 +49,8 @@ website/www/Rakefile
 # Dynamically created file
 /salt/railsapp/files
 /pillar/application.sls
+
+# Temp files
+,*
+*~
+
