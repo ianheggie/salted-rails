@@ -1,4 +1,4 @@
-# Salted::Rails
+# Salted-Rails
 
 Salted-Rails: Provision rails using salt to vagrant or capistrano controlled systems
 
