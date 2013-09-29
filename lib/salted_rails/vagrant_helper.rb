@@ -1,24 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 #
-# Example Vagrantfile:
-#
-# #require File.dirname(__FILE__) + '/vendor/salted-rails/lib/salted_rails/vagrant_helper.rb'
-# # if installed as a plugin into vagrant:
-# require 'salted_rails/vagrant_helper'
-#
-# vagrant_helper = SaltedRails::VagrantHelper.new(File.dirname(__FILE__), true)
-#
-# Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-#
-#   vagrant_helper.configure_vagrant(config)
-#   vagrant_helper.configure_digital_ocean(config)
-#   vagrant_helper.configure_salt(config)
-#   vagrant_helper.configure_ports(config)
-#
-#   # override default key
-#   config.ssh.private_key_path = '~/.ssh/id_rsa_Another'
-# end
 
 require 'erb'
 require 'yaml'
@@ -44,7 +26,6 @@ module SaltedRails
     def configure_vagrant(config)
       config.vm.box = 'UbuntuCloud_12.04_32bit'
       config.vm.box_url = 'http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-vagrant-i386-disk1.box'
-
       config.ssh.private_key_path = '~/.ssh/id_rsa'
       config.ssh.forward_agent = true
     end
