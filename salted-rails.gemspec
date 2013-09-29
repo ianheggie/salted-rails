@@ -1,15 +1,15 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'salted/rails/version'
+require 'salted_rails/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "salted-rails"
   spec.version       = SaltedRails::VERSION
   spec.authors       = ["Ian Heggie"]
   spec.email         = ["ian@heggie.biz"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{Provision rails using salt to vagrant or capistrano controlled systems}
+  spec.description   = %q{Provision rails using salt to vagrant or capistrano controlled systems}
+  spec.summary       = %q{Provision rails using salt to vagrant or capistrano controlled systems. Uses details from .ruby-version, config/database.yml, Gemfile and Gemfile.lock to configure system}
   spec.homepage      = ""
   spec.license       = "MIT"
 

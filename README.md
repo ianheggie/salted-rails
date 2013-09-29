@@ -2,7 +2,9 @@
 
 Salted-Rails: Provision rails using salt to vagrant or capistrano controlled systems
 
-EXPERIMENTAL
+This gem inspects .ruby-version, config/database.yml, Gemfile and Gemfile.lock to generate salt pillar files to control the configuration of the system. 
+
+THIS GEM IS IN THE EXPERIMENTAL STAGE (pre pre alpha)! EXPECT THINGS TO CHANGE AND BREAK WITHOUT NOTICE!
 
 ## Installation
 
