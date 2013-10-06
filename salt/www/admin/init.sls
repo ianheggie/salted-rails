@@ -5,25 +5,23 @@ nginx:
     - running
     - enable: True
     - reload: True
-    #- watch:
+    - watch:
       #- file: {{ pillar['etc_dir'] }}nginx/nginx.conf
       #- file: {{ pillar['etc_dir'] }}nginx/sites-enabled/*
-      #- file: {{ pillar['etc_dir'] }}nginx/admin.d/*
-    - require:
-      - file.directory: admin-d
-      - pkg: nginx
+      - file: {{ pillar['etc_dir'] }}nginx/*
+  require:
+    - file: {{ pillar['etc_dir'] }}nginx/nginx.conf
 
-admin-d:
-  file.directory:
-    - name: {{ pillar['etc_dir'] }}nginx/admin.d
+admin-site:
+  file.managed:
+    - source: salt://www/nginx/etc/nginx/admin.d/phpmyadmin.conf
+    - name: {{ pillar['etc_dir'] }}nginx/admin.d/phpmyadmin.conf
     - user: root
     - group: root
-    - mode: 755
-    - require:
-      - pkg: nginx
+    - template: jinja
+    - mode: 644
 
-#  require:
-#    - file: {{ pillar['etc_dir'] }}nginx/nginx.conf
+admin_conf:
 
 #{{ pillar['etc_dir'] }}nginx/nginx.conf:
 #  file.managed:

@@ -4,6 +4,12 @@ if defined? Vagrant
   end
 else
   class SaltedRailsBase
+    def name(v)
+    end
+
+    def config(name, &block)
+    end
+
   end
 end
 

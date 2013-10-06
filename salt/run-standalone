@@ -1,3 +1,4 @@
 #!/bin/bash
 
-sudo salt-call state.highstate --local 
+sudo salt-call saltutil.sync_all
+sudo salt-call state.highstate 

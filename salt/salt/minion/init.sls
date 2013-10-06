@@ -17,7 +17,7 @@ restart_minion:
     - order: last
     - watch:
       - pkg: salt-minion
-      - file: /etc/salt/minion
+      #- file: /etc/salt/minion
       - file: /etc/salt/minion.d
     - require:
       - pkg: at
@@ -30,20 +30,21 @@ salt-minion:
     - names:
       - salt-minion
       - at
-  file.managed:
-    - name: /etc/salt/minion
-    - owner: root
-    - group: root
-    - mode: 0644
-    - source: salt://salt/minion/config.template
-    - template: jinja
-    - context:
-      master: salt
-      file_roots:
-        base:
-          - /srv/salt/private
-          - /srv/salt/base
-      pillar_roots:
-        base:
-          - /srv/salt/private/pillar
-          - /srv/salt/base/pillar
+#  Don't want to override minion copied in by vagrant!
+#  file.managed:
+#    - name: /etc/salt/minion
+#    - owner: root
+#    - group: root
+#    - mode: 0644
+#    - source: salt://salt/minion/config.template
+#    - template: jinja
+#    - context:
+#      master: salt
+#      file_roots:
+#        base:
+#          - /srv/salt/private
+#          - /srv/salt/base
+#      pillar_roots:
+#        base:
+#          - /srv/salt/private/pillar
+#          - /srv/salt/base/pillar

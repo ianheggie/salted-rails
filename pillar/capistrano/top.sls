@@ -1,5 +1,6 @@
 base:
   '*':
-    - common
-    - application
-    - capistrano
+    - salted-rails/common
+    - config/railsapp
+    - salted-rails/capistrano
+    - config/custom

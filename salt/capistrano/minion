@@ -5,10 +5,14 @@ state_auto_order: True
 
 file_roots:
   base:
-    - /srv/salt/capistrano
+    - /srv/salt/config/capistrano
+    - /srv/salt/salted-rails/capistrano
+    - /srv/salt/salted-rails
     - /srv/salt
 
 pillar_roots:
   base:
-    - /srv/pillar/capistrano
+    - /srv/pillar/config/capistrano
+    - /srv/pillar/salted-rails/capistrano
+    - /srv/pillar/salted-rails
     - /srv/pillar
