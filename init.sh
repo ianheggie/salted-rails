@@ -14,7 +14,7 @@ if which vagrant; then
   echo Checking vagrant plugins are installed ...
 
   vagrant plugin list > /tmp/t$$
-  for plugin in deep_merge vagrant-digitalocean vagrant-vbguest # salted-rails
+  for plugin in deep_merge vagrant-digitalocean vagrant-vbguest salted-rails
   do
     if grep $plugin < /tmp/t$$; then
       vagrant plugin update $plugin
@@ -24,20 +24,22 @@ if which vagrant; then
   done
 
 else
-  echo ACTION REQUIRED: Please install vagrant 1.3.4 or later from http://www.vagrantup.com/
+  echo ACTION REQUIRED: Please install vagrant 1.3.3 (1.3.4 has a bug) from http://www.vagrantup.com/
   msg='(PLEASE RERUN SCRIPT AFTERWARDS)'
 fi
 
-if [ -f Vagrantfile.example ]; then
-  if [ -f Vagrantfile ]; then
-    echo Found Vagrantfile '(previously copied from example)'
+if [ ! -f Vagrantfile ]; then
+  if [ -f Vagrantfile.example ]; then
+    if [ -f Vagrantfile ]; then
+      echo Found Vagrantfile '(previously copied from example)'
+    else
+      echo Copying Vagrantfile.example to Vagrantfile '(so you can customize it)'
+      cp Vagrantfile.example Vagrantfile
+    fi
   else
-    echo Copying Vagrantfile.example to Vagrantfile '(so you can customize it)'
-    cp Vagrantfile.example Vagrantfile
+    echo WARNING: Vagrantfile.example not found - skipped Vagrantfile setup
+    msg='(Please run vagrant init in your rails project directory then edit Vagrantfile)'
   fi
-else
-  echo ERROR: setup_vagrant Must be run in rails root directory '(Vagrantfile.example not found)'
-  msg='(PLEASE RERUN SCRIPT FROM CORRECT DIRECTORY)'
 fi
 
 mkdir -p $HOME/.vagrant.d

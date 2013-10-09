@@ -4,9 +4,10 @@ Salted-Rails: Provision a vagrant machine for rails using salt.
 
 This gem inspects your rails app configuration to work out what needs to be installed in the virtual machine.
 
-THIS GEM IS IN ALPHA STAGE! THINGS MAY CHANGE AND BREAK WITHOUT NOTICE!
+This gem reflects my personal preferences in setting up a virtual machine for rails projects,
+and will change over time as I refine it for use with other projects.
 
-It Inspects:
+It inspects:
   * .ruby-version / .rvmrc to control the version of ruby installed (using rbenv)
   * config/database.yml to create users and databases
   * Gemfile and Gemfile.lock to preload gems into the system, and trigger the installation of packages required by gems
@@ -15,20 +16,40 @@ This configures vagrant in the way that I personally like:
 * ubunutu 12.04 (LTS) 32bit from cloud-images.ubuntu.com (up to date packages and more memory free for systems < 4GB memory)
 * forward ssh agent
 * digital ocean default to 'San Francisco 1'
-* salt provisioning based on rails Gemfile[.lock], database.yml and .ruby-version configuration
+* salt provisioning with 0.16.4 version (to avoid problems with 0.17.0) and /etc/hostname fix
 * forward post 3000, 80, 443
+* Include fix vbguest fix for upgrading virtualbox additions with ubunutu cloud
 
-I am intending to add a capistrano helper as well
+I am thinking of doing the following in the future:
+* Configuring up vim with a standard set of plugins
+* Expand it for use with capistrano (for deployment to staging and production servers), including hardening up the server for security
+* Expand it to construct continuous testing / delivery servers
 
 ## Installation
 
-### Vagrant
+### Packages and plugins
+
+Download init.sh script and run:
+
+  $ wget https://raw.github.com/ianheggie/salted-rails/master/init.sh
+  $ sh init.sh
+
+This will:
+
+* prompt you to install vagrant (1.3.3 not 1.3.4) if not already present
+* prompt you to install virtualbox (4.2.18 or later) if not already present
+* install this (salted-rails) vagrant plugin as well as the following other plugins:
+  * deep\_merge vagrant-digitalocean vagrant-vbguest
+* If your project has a Vagrantfile.example, it will copy it to Vagrantfile
+* Prompt for and setup ~/.vagrant.d/Vagrantfile with your digital ocean client and api keys (if not already present)
 
 Add as a vagrant plugin
 
     vagrant plugin add salted-rails
 
-And then adjust your Vagrantfile as follows (accepting all the defaults, one machine):
+### Vagrantfile
+
+Adjust your Vagrantfile as follows (example of accepting all the defaults, one default machine):
 
   Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -100,6 +121,10 @@ The mirror value can also be:
 * 'internode' - an australian ISP (mine ;)
 * a country code - eg 'au', 'uk', 'us' etc
 * url of mirror - specify the full url (in the same format as mirrors.txt above)
+
+### Updating virtualbox guest additions
+
+Use `vagrant vbguest --do install` to update the virtualbox guest additions (required for shared folders to work with OS/X)
 
 ### Capistrano
 
