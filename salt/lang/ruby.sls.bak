@@ -73,7 +73,7 @@ adjust_profile:
 #
 
 # this is currently not working
-# ruby-{{ pillar['ruby-version'] }}:
+# ruby-{{ pillar['ruby_version'] }}:
 #   rbenv.installed:
 #     - default: True
 #     - require:
@@ -81,7 +81,7 @@ adjust_profile:
 
 install_ruby:
   cmd.run:
-    - name: {{ pillar['homedir'] }}/.rbenv/bin/rbenv install {{ pillar['ruby-version'] }}
+    - name: {{ pillar['homedir'] }}/.rbenv/bin/rbenv install {{ pillar['ruby_version'] }}
     - user: {{ pillar['username'] }}
     - group: {{ pillar['username'] }}
     - require:
@@ -97,7 +97,7 @@ rehash:
 
 set-global:
   cmd.run:
-    - name: {{ pillar['homedir'] }}/.rbenv/bin/rbenv global {{ pillar['ruby-version'] }}
+    - name: {{ pillar['homedir'] }}/.rbenv/bin/rbenv global {{ pillar['ruby_version'] }}
     - user: {{ pillar['username'] }}
     - group: {{ pillar['username'] }}
     - require:

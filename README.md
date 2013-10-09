@@ -1,10 +1,15 @@
 # Salted-Rails
 
-Salted-Rails: Provision rails using salt to vagrant or capistrano controlled systems
+Salted-Rails: Provision a vagrant machine for rails using salt.
 
-This gem inspects .ruby-version, config/database.yml, Gemfile and Gemfile.lock to generate salt pillar files to control the configuration of the system. 
+This gem inspects your rails app configuration to work out what needs to be installed in the virtual machine.
 
-THIS GEM IS IN THE EXPERIMENTAL STAGE (pre pre alpha)! EXPECT THINGS TO CHANGE AND BREAK WITHOUT NOTICE!
+THIS GEM IS IN ALPHA STAGE! THINGS MAY CHANGE AND BREAK WITHOUT NOTICE!
+
+It Inspects:
+  * .ruby-version / .rvmrc to control the version of ruby installed (using rbenv)
+  * config/database.yml to create users and databases
+  * Gemfile and Gemfile.lock to preload gems into the system, and trigger the installation of packages required by gems
 
 This configures vagrant in the way that I personally like:
 * ubunutu 12.04 (LTS) 32bit from cloud-images.ubuntu.com (up to date packages and more memory free for systems < 4GB memory)
@@ -23,18 +28,62 @@ Add as a vagrant plugin
 
     vagrant plugin add salted-rails
 
-And then adjust your Vagrantfile as follows:
+And then adjust your Vagrantfile as follows (accepting all the defaults, one machine):
 
-    require 'salted_rails/vagrant_helper'
-    vagrant_helper = SaltedRails::VagrantHelper.new(File.dirname(__FILE__))
+  Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+    if defined? SaltedRails::Config
+      salted_config = SaltedRails::Config.new(File.dirname(__FILE__))
+      salted_config.configure_vagrant(config)
+    end
+
+    # .... etc ....
+  end
+
+Or for a more complicated example:
+
     Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-      vagrant_helper.configure_vagrant(config)
-      vagrant_helper.configure_ubuntu_mirror(config, 'mirror')  # best (ping not bandwidth?) mirror
-      vagrant_helper.configure_digital_ocean(config)
-      vagrant_helper.configure_salt(config)
-      vagrant_helper.configure_ports(config)
-      # example - override default key
-      # config.ssh.private_key_path = '~/.ssh/id_rsa_Another'
+
+      if defined? SaltedRails::Config
+        salted_config = SaltedRails::Config.new(File.dirname(__FILE__))
+
+        # On the guest run the following to copy all these files/firectories to vagrant home directory
+        # cd /srv/salt/generated/home ; cp -R .[a-z]* ~vagrant
+        # note .ssh/known_hosts and .ssh/authorized_hosts are renamed with .copy_from_home appended
+        salted_config.copy_from_home = %w{ .vim .vimrc .gitconfig .ssh .tmux .tmux.conf }
+
+        # if you have multiple ssh keys, you can select which one
+        salted_config.private_key_path = '~/.ssh/id_rsa_project' if File.exist? '~/.ssh/id_rsa_project'
+
+        # override default domain
+        salted_config.domain = 'mydomain.com'
+
+        # Define a machine  dev
+        salted_config.define('dev') do |machine_config|
+        end
+        
+        salted_config.define('qa') do |machine_config|
+          # use my ISP's mirror 
+          salted_config.mirror = 'internode'
+
+          # explicitly specify memory
+          machine_config.memory = 1024
+
+          # add extra roles, which will install extra packages and increase teh defsault memory allocation
+
+          # two continuous integration packages
+          # browse http://localhost:8111
+          machine_config.roles <<= 'teamcity'
+
+          # browse http://localhost:3333
+          machine_config.roles <<= 'curisecontrolrb'
+
+          # gui also configures virtualbox for standard rather than headless mode
+          machine_config.roles <<= 'gui'
+        end
+          
+        salted_config.configure_vagrant(config)
+      end
     end
 
 You can add configuration that applies to all your projects to `~/.vagrant.d/Vagrantfile`, eg:
@@ -46,7 +95,7 @@ You can add configuration that applies to all your projects to `~/.vagrant.d/Vag
       end
     end
 
-The ubuntu_mirror value can also be:
+The mirror value can also be:
 * 'mirror' - Configures mirror: option to auto select from http://mirrors.ubuntu.com/mirrors.txt
 * 'internode' - an australian ISP (mine ;)
 * a country code - eg 'au', 'uk', 'us' etc
@@ -72,12 +121,8 @@ TODO: write the helper and then configure capistrano to use it ...
 
 TODO: Write usage instructions here
 
-Salt rules are copied into RAILS_ROOT/tmp/salt and pillar info into RAILS_ROOT/tmp/pillar by the `configure_salt` method.
-It also (re)creates `pillar/application.sls` based on `.ruby-version`, `config/database.yml` and `Gemfile` ehenever they change.
-The configuration files are also copied to `salt/railsapp/files/`.
-
-If you move `RAILS_ROOT/tmp/salt` and `RAILS_ROOT/tmp/pillar` into a RAILS_ROOT/salt directory then you can adjust the other files as desired.
-In that case only the `pillar/application.sls` and `salt/railsapp/files/*` files will be refreshed when they become stale (rather than all files).
+This gem generates pillar and salt files in RAILS_ROOT/tmp/salt and RAILS_ROOT/tmp/pillar respectively from your application configuration files.
+The files it generates are based on `.ruby-version`, `config/database.yml` and `Gemfile` as well 
 
 ## Contributing
 

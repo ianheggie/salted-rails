@@ -5,9 +5,9 @@
 require 'erb'
 require 'yaml'
 require 'fileutils'
-require "salted_rails_base"
+require 'salted-rails/helper_base'
 
-class SaltedRails < SaltedRailsBase
+module SaltedRails
   class CapistranoHelper < HelperBase
 
     def initialize(rails_root, logger = Log4r::Logger.new("salted_rails::capistrano_helper"))

@@ -34,13 +34,13 @@ rbenv-deps:
 
 ruby:
   rbenv.installed:
-    - name: {{ pillar['ruby-version'] }}
+    - name: {{ pillar['ruby_version'] }}
     - default: True
     - runas: {{ pillar['username'] }}
     - require:
       - pkg: rbenv-deps
 
-adjust_profile:
+rbenv-adjust_profile:
   file.append:
     - name: {{ pillar['homedir'] }}/.profile
     - user: {{ pillar['username'] }}
@@ -57,4 +57,4 @@ base_gems:
     - names:
       - bundler
     - require:
-      - file: adjust_profile
+      - file: rbenv-adjust_profile

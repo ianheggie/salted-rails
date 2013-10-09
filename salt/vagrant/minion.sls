@@ -1,6 +1,5 @@
 minion:
-    file:
-        - source: salt://vagrant/minion
-        - name: /etc/salt/minion
-        - mode: 644
-
+  file.provision:
+    - source: salt://vagrant/minion
+    - name: /etc/salt/minion
+    - mode: 644

@@ -1,8 +1,4 @@
 base:
   '*':
-    - common
-    - capistrano
-
-# if GUI:
-# www.chromium
+    - TODO.SETUP.CAPISTRANO
 

@@ -1,9 +1,10 @@
 include:
   - lang.java
 
-{{ pillar['homedir'] }}/local:
+{{ pillar['homedir'] }}/local/tmp:
   file.directory:
     - makedirs: True
+    - clean: True
     - user: {{ pillar['username'] }}
     - group: {{ pillar['username'] }}
 
@@ -13,34 +14,38 @@ rubymine-download:
     - cwd: {{ pillar['homedir'] }}/local
     - user: {{ pillar['username'] }}
     - group: {{ pillar['username'] }}
-    # - unless: mine -v 2>/dev/null
-    - unless: [ -d {{ pillar['homedir'] }}/local/RubyMine-{{ pillar['rubymine-version'] }} ] 2>/dev/null
+    - unless: [ -d {{ pillar['homedir'] }}/local/RubyMine-{{ pillar['rubymine-version'] }} ]
     - require:
-      - file.directory: {{ pillar['homedir'] }}/local
+      - file.directory: {{ pillar['homedir'] }}/local/tmp
 
 rubymine-extract:
   cmd.run:
-    - name: tar xfz RubyMine-5.4.3.tar.gz
-    - cwd: {{ pillar['homedir'] }}/local
+    - name: tar xfz ../RubyMine-{{ pillar['rubymine-version'] }}.tar.gz
+    - cwd: {{ pillar['homedir'] }}/local/tmp
     - user: {{ pillar['username'] }}
     - group: {{ pillar['username'] }}
-    # - unless: mine -v 2>/dev/null
-    - unless: [ -d RubyMine-5.4.3 ] 2>/dev/null
+    - unless: [ -d ../RubyMine-{{ pillar['rubymine-version'] }} ] 
     - require:
-      - cmd: 
+      - cmd: rubymine-download
 
-#rubymine-install:
-#  cmd.run:
-#  
-#
-#
-#php-composer:
-#  cmd.run:
-#    - name: curl -s https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
-#    - unless: composer -v 2>/dev/null
-#    - require:
-#      - pkg: php
-#
-## http://download.jetbrains.com/ruby/RubyMine-5.4.3.tar.gz
-#
-#
+# The tar file contains extra version numbers in its top directory
+rubymine-rename:
+  cmd.run:
+    - name: mv RubyMine-* ../RubyMine-{{ pillar['rubymine-version'] }}
+    - cwd: {{ pillar['homedir'] }}/local/tmp
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - unless: [ -d ../RubyMine-{{ pillar['rubymine-version'] }} ] 
+    - require:
+      - cmd: rubymine-extract
+
+rubymine-adjust_profile:
+  file.append:
+    - name: {{ pillar['homedir'] }}/.profile
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - text:
+      - export PATH="{{ pillar['homedir'] }}/RubyMine-{{ pillar['rubymine-version'] }}/bin:$PATH"
+    - require:
+      - cmd: rubymine-rename
+

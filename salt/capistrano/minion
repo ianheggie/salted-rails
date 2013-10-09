@@ -8,11 +8,11 @@ file_roots:
     - /srv/salt/config/capistrano
     - /srv/salt/salted-rails/capistrano
     - /srv/salt/salted-rails
-    - /srv/salt
+    - /srv/salt/generated
 
 pillar_roots:
   base:
     - /srv/pillar/config/capistrano
     - /srv/pillar/salted-rails/capistrano
     - /srv/pillar/salted-rails
-    - /srv/pillar
+    - /srv/pillar/generated

@@ -1,13 +1,8 @@
+
 include:
-  - apt.partner-sources
-  - apt.unwanted
-  - lang.ruby
-  - www.users
-  - www.nginx
   # MySQL
 {%- if ('mysql' in pillar['gems']) or ('mysql2' in pillar['gems']) %}
-  - databases.mysql
-  - databases.phpmyadmin
+  - databases.mysql.client
 {%- endif %}
   # PostgreSQL - TODO main alternative to mysql
   # MongoDB - TODO Document database
@@ -21,14 +16,3 @@ include:
   # ElasticSearch - TODO search and analytics engine
   # Kestrel - TODO light-weight persistent message queue
   # SQLite3 - Included by default
-  - sysutils
-  - develop
-  - editors.vim
-  - sysutils.tmux
-  - railsapp
-
-  #- echo_pillar
-
-# if GUI:
-# www.chromium
-

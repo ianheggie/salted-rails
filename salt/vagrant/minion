@@ -8,11 +8,11 @@ file_roots:
     - /srv/salt/config/vagrant
     - /srv/salt/salted-rails/vagrant
     - /srv/salt/salted-rails
-    - /srv/salt
+    - /srv/salt/generated
 
 pillar_roots:
   base:
     - /srv/pillar/config/vagrant
     - /srv/pillar/salted-rails/vagrant
     - /srv/pillar/salted-rails
-    - /srv/pillar
+    - /srv/pillar/generated

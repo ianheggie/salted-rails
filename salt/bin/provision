@@ -1,0 +1,37 @@
+#!/bin/bash
+
+case "$1" in
+run)
+	shift
+	case "$#" in
+	0)
+		echo "Running all states ..."
+		sudo salt-call saltutil.sync_all
+		sudo salt-call state.highstate 
+		;;
+	*)
+		for file; do
+			echo "Running $file ..."
+			sudo salt-call state.sls "$file"
+		done
+		;;
+	esac
+	;;
+grains)
+	sudo salt-call grains.items
+	;;
+pillar)
+	sudo salt-call pillar.items
+	;;
+packages)
+	dpkg --get-selections | sed -n 's/\s\s*install//p'
+	;;
+install|remove|purge|update|upgrade|clean|autoremove)
+	sudo apt-get "$@"
+	;;
+*)
+	echo "usage: $0 grains|pillar|run [state]|packages|install package|remove package|purge package|autoclean|autoremove\n"
+	;;
+esac
+		
+
