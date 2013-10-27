@@ -4,6 +4,7 @@ munin-nginx-plugins:
         - source: salt://munin/files/nginx/plugins
         - name: /etc/munin/plugins
         - mode: 755
+        - exclude_pat: '.*swp'
 
 munin-nginx-plugin-conf:
     file:
@@ -11,3 +12,4 @@ munin-nginx-plugin-conf:
         - source: salt://munin/files/nginx/plugin-conf.d
         - name: /etc/munin/plugin-conf.d
         - mode: 755
+        - exclude_pat: '.*swp'

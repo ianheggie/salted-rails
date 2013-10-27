@@ -7,29 +7,32 @@ require 'log4r'
 module SaltedRails
   class Config
 
-    attr_accessor :private_key_path
-    attr_accessor :machine
-    attr_accessor :hostname
-    attr_accessor :domain
-    attr_accessor :rails_root
-    attr_accessor :salt_root
-    attr_accessor :mirror
-    attr_accessor :logger
-    attr_accessor :memory
-    attr_accessor :ports
-    attr_accessor :disable_vagrant_sync
+    attr_accessor :box
     attr_accessor :ca_path
-    attr_accessor :region
-    attr_accessor :forward_agent
-    attr_accessor :files
-    attr_accessor :databases
-    attr_accessor :roles
-    attr_accessor :gems
-    attr_accessor :ruby_version
-    attr_accessor :java_version
-    attr_accessor :php_version
-    attr_accessor :machines
     attr_accessor :copy_from_home
+    attr_accessor :admin_password
+    attr_accessor :web_password
+    attr_accessor :databases
+    attr_accessor :domain
+    attr_accessor :files
+    attr_accessor :forward_agent
+    attr_accessor :gems
+    attr_accessor :hostname
+    attr_accessor :logger
+    attr_accessor :machine
+    attr_accessor :machines
+    attr_accessor :memory
+    attr_accessor :mirror
+    attr_accessor :packages
+    attr_accessor :ports
+    attr_accessor :mapped_ports
+    attr_accessor :private_key_path
+    attr_accessor :rails_root
+    attr_accessor :region
+    attr_accessor :roles
+    attr_accessor :salt_root
+    attr_accessor :sync_vagrant
+    attr_accessor :versions
 
     def sanitize_dns_name(name)
       dns_name = name.downcase.gsub(/[^-0-9a-z]+/,'-').sub(/^-+/, '').sub(/-+$/, '')
@@ -45,15 +48,20 @@ module SaltedRails
       # see salt/vagrant/top.sls for other roles
       @roles = %w{ app web db }
       @domain = nil
+      @admin_password = nil
+      @web_password = nil
       @private_key_path = nil
       @mirror = nil
       @memory = nil
       @ports = [ 80, 443, 880, 3000 ]
-      @disable_vagrant_sync = true
+      @mapped_ports = { }
+      @sync_vagrant = nil
+      @box = nil
       @ca_path = nil
       @region = nil
       @forward_agent = true
-      @files = [ '.ruby-version', '.java-version', '.php-version', '.rvmrc', 'config/database.yml', 'Gemfile', 'Gemfile.lock' ].select{ |f| File.exist?(@rails_root + f) }
+      @files = [ '.ruby-version', '.java-version', '.php-version', 'config/database.yml', 'Gemfile', 'Gemfile.lock' ].select{ |f| File.exist?(@rails_root + f) }
+      @packages = nil
       @copy_from_home = [ ]
 
       ENV['REMOTE_MACHINE'] = 'true'
@@ -73,12 +81,12 @@ module SaltedRails
         end
       end
       @databases.each do |key, details|
-        @gems[details['adapter']] = true
+        @gems[details['adapter']] ||= true
       end
 
-      @ruby_version = nil
-      @java_version = nil
-      @php_version = nil
+      @roles << 'mysql' if @gems.include?('mysql') or @gems.include?('mysql2')
+
+      @versions= { }
 
       @machines = [ ]
       @hostname = nil
@@ -89,7 +97,26 @@ module SaltedRails
     end
 
     def normalize
-      unless @memory
+      @versions['mysql'] ||= '5.5' if @roles.include?('mysql')
+      @versions['teamcity'] ||= '8.0.4' if @roles.include?('teamcity')
+      @versions['rubymine'] ||= '5.4.3' if @roles.include?('rubymine')
+      @roles << 'gui' if @roles.include?('rubymine') and not @roles.include?('gui')
+
+      %w{ ruby php java }.each do |lang|
+        version = File.open(@rails_root + ".#{lang}-version", 'r') do |f_in|
+          f_in.gets.gsub(/\s/,'')
+        end rescue nil
+        @versions[lang] ||= version if version
+      end
+      unless @versions.include?('ruby')
+        File.open(@rails_root + '.rvmrc', 'r') do |f_in|
+          while (line = f_in.gets) and not @versions.include('ruby')
+            @versions['ruby'] = $1 if line =~ /^\s*environment_id=['"]([^"'@]+)/
+          end
+        end rescue nil
+      end
+
+      if @memory.nil?
         @memory = 512
         {
                 'gui' => 1536,
@@ -99,7 +126,8 @@ module SaltedRails
           @memory += extra if @roles.include?(role)
         end
       end
-      unless @domain
+
+      if @domain.nil?
         if @hostname
           @domain = @hostname.sub(/^[^.]*\.?/, '')
         else
@@ -107,6 +135,7 @@ module SaltedRails
           @domain = 'railsapp.test' if @domain == '.test'
         end
       end
+
       if @hostname.nil? or @hostname == ''
         if @machine == 'default'
           @hostname = @domain
@@ -119,32 +148,14 @@ module SaltedRails
           end
         end
       end
-      @ruby_version ||= File.open(@rails_root + '.ruby-version', 'r') do |f_in|
-        f_in.gets.gsub(/\s/,'')
-      end rescue nil
-      @ruby_version ||= File.open(@rails_root + '.rvmrc', 'r') do |f_in|
-        while !ruby_version && (line = f_in.gets) 
-          ruby_version = $1 if line =~ /^\s*environment_id=['"]([^"'@]+)/
-        end
-      end rescue nil
-      @ruby_version ||= '1.9.3'
-
-      @java_version ||= File.open(@rails_root + '.java-version', 'r') do |f_in|
-        f_in.gets.gsub(/\s/,'')
-      end rescue nil
-
-      @php_version ||= File.open(@rails_root + '.php-version', 'r') do |f_in|
-        f_in.gets.gsub(/\s/,'')
-      end rescue nil
 
       @private_key_path ||= '~/.ssh/id_rsa'
       @mirror ||= 'auto'
       @salt_root ||= File.dirname(__FILE__) + '/../../'
       @ca_path ||= '/etc/ssl/certs/ca-certificates.crt'
+      @box ||= 'preciseCloud32'
       @ca_path = nil unless File.exist?(@ca_path)
       @region ||= 'San Francisco 1'
-
-      @machines.each {|m| m.normalize}
 
       {
               'teamcity' => 8111,
@@ -153,6 +164,9 @@ module SaltedRails
         @ports << port if @roles.include?(role) and not @ports.include?(port)
       end
 
+      @sync_vagrant = true if @sync_vagrant.nil?
+
+      @machines.each {|m| m.normalize}
     end
 
     def define(machine, &block)
@@ -178,21 +192,23 @@ module SaltedRails
 
     def to_hash
       {
-        'domain' => @domain,
-        'mirror' => @mirror,
-        'machine' => @machine,
-        'hostname' => @hostname,
-        'memory' => @memory,
-        'disable_vagrant_sync' => @disable_vagrant_sync,
-        'region' => @region,
-        'forward_agent' => @forward_agent,
-        'files' => @files,
+        'admin_password' => @admin_password,
         'databases' => @databases,
+        'disable_vagrant_sync' => @disable_vagrant_sync,
+        'domain' => @domain,
+        'files' => @files,
+        'forward_agent' => @forward_agent,
         'gems' => @gems,
-        'ruby_version' => @ruby_version,
-        'java_version' => @java_version,
-        'php_version' => @php_version,
-        'roles' => @roles
+        'hostname' => @hostname,
+        'machine' => @machine,
+        'mapped_ports' => @mapped_ports,
+        'memory' => @memory,
+        'mirror' => @mirror,
+        'ports' => @ports,
+        'region' => @region,
+        'roles' => @roles,
+        'user_password' => @user_password,
+        'versions' => @versions
       }
     end
 

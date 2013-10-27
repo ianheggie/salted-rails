@@ -59,6 +59,21 @@ module SaltedRails
         end
         FileUtils.cp(@config.rails_root + f, dest)
       end
+      dest = salt_dir + 'packages.txt'
+      if @config.packages
+        src = @config.packages
+        src = @config.rails_root + src unless src =~ /^\//
+        dir = File.dirname(dest)
+        unless File.directory? dir
+          FileUtils.mkdir_p dir
+        end
+        if !File.exist?(dest) or (File.mtime(src) > File.mtime(dest))
+          @config.logger.info "SaltedRails: Copying #{src} to #{dest}"
+          FileUtils.cp(src, dest)
+        end
+      else
+        FileUtils.rm_f dest
+      end
       @config.copy_from_home.each do |f|
         dest = salt_dir + "home/" + f
         dir = File.dirname(dest)

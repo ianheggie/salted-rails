@@ -10,11 +10,4 @@ logs_dir: /var/log/
 
 www_dir: /srv/www/
 
-mysql-version: 5.5
-
-teamcity-version: 8.0.4
-
-rubymine-version: 5.4.3
-
-
-# vim: filetype=sls
+# vim: filetype=sls:

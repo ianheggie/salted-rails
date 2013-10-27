@@ -1,5 +1,5 @@
 base:
   '*':
-    - common
     - railsapp
     - vagrant
+    - common

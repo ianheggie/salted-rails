@@ -1,0 +1,42 @@
+[core]
+  autocrlf=input
+  safecrlf=true
+# Thanks to http://git.or.cz/gitwiki/Aliases
+[alias]
+  ci = commit
+  co = checkout
+  st = status
+  br = branch
+  me = merge
+  # usage: git chmod +x file,...
+  chmod=update-index --chmod
+  staged = diff --cached
+  unstaged = diff
+  both = diff HEAD
+  oneline = log --oneline
+  abbrev = rev-parse --short
+  nmm = branch -a --no-merged master
+  nmr = branch -a --no-merged release_candidate
+  nme = branch -a --no-merged edge
+  merge-no-ff = merge --no-ff
+  edit-unmerged = "!fgit() { git ls-files --unmerged | cut -f2 | sort -u ; }; gvim `fgit`"
+  add-unmerged = "!fgit() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `fgit`"
+[color]
+  branch = auto
+  diff = auto
+  interactive = auto
+  status = auto
+[log]
+  decorate = short
+[gui]
+  spellingdictionary = en_GB
+[push]
+  # later versions have simple - push only the current branch to the one that git pull would pull from (use --all for all branches when pulling or pushing)
+  # git on LTS ubuntu doesn't have it
+  default = matching
+[merge]
+  # Show what we are changing from as well as the two options
+  conflictstyle = diff3
+[diff]
+  # match on unique lines first so we are less likely to get weird diffs matching lines with just braces etc
+  algorithm = patience

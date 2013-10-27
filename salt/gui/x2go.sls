@@ -1,3 +1,6 @@
+include:
+  - gui.desktop
+
 x2go:
   pkgrepo.managed:
     - humanname: X2Go PPA repository
@@ -8,6 +11,8 @@ x2go:
       - x2goserver-xsession
     - require:
       - pkgrepo: x2go
+      - sls: gui.desktop
+
   file.sed:
     - name: /etc/ssh/sshd_config
     - before: ^HostKey /etc/ssh/ssh_host_ecdsa_key

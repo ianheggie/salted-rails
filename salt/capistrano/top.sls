@@ -1,4 +1,0 @@
-base:
-  '*':
-    - TODO.SETUP.CAPISTRANO
-

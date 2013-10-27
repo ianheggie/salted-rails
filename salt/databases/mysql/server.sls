@@ -51,7 +51,7 @@ include:
 
 mysql-server:
   pkg.installed:
-    - name: {{ "mysql-server" if pillar["mysql-version"] is not defined else "mysql-server-%s" % pillar["mysql-version"] }}
+    - name: {{ "mysql-server" if pillar["versions"]["mysql"] is not defined else "mysql-server-%s" % pillar["versions"]["mysql"] }}
   service.running:
     - name: mysql
     - require:

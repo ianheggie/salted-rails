@@ -79,6 +79,10 @@ Or for a more complicated example:
         # override default domain
         salted_config.domain = 'mydomain.com'
 
+        # load packages specified in a file (eg generated from your production system)
+        # use `dpkg --get-selections "*" > my_packages-datestamp` to generate the list
+        #salted_config.packages = 'config/my_packages-datestamp'
+
         # Define a machine  dev
         salted_config.define('dev') do |machine_config|
         end
@@ -101,6 +105,9 @@ Or for a more complicated example:
 
           # gui also configures virtualbox for standard rather than headless mode
           machine_config.roles <<= 'gui'
+
+          # Disable the syncing to /vagrant in digital_ocean (useful for development that is independent of local machine)
+          machine_config.sync_vagrant = false
         end
           
         salted_config.configure_vagrant(config)

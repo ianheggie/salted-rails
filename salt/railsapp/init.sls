@@ -1,7 +1,11 @@
 include:
-  - databases
+  - databases.packages
   - railsapp.packages
+{%- if ('app' in pillar['roles']) %}
+{%- if 'ruby' in pillar['versions'] %}
   - railsapp.gems
-{%- if ('mysql' in pillar['gems']) or ('mysql2' in pillar['gems']) %}
+{%- endif %}
+{%- endif %}
+{%- if ('mysql' in pillar['roles']) %}
   - railsapp.mysql_database
 {%- endif %}

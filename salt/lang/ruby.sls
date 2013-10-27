@@ -1,60 +1,47 @@
-# 
-# ruby deps
-# 
+include:
+  - scm
+  - databases.packages
 
-rbenv-deps:
+ruby-deps:
   pkg.installed:
     - pkgs:
-      - autoconf 
+      - autoconf
       - automake
+      - bash
       - bison
       - build-essential
-      - curl 
-      - git
+      - curl
       - libc6-dev
       - libcurl4-openssl-dev
       - libfreeimage3
       - libfreeimage-dev
-      - libmysqlclient-dev 
       - libncurses5-dev
+      - libreadline6
+      - libreadline6-dev
       - libreadline-dev
-      - libsqlite3-0
-      - libsqlite3-dev
-      - sqlite3
-      - libssl-dev 
+      - libssl-dev
       - libtool
-      - libxml2-dev 
-      - libxslt1-dev 
+      - libxml2-dev
+      - libxslt1-dev
       - libyaml-dev
       - openssl
-      - python-software-properties 
-      - subversion
+      - python-software-properties
       - zlib1g
-      - zlib1g-dev 
+      - zlib1g-dev
+    - require:
+      - pkg: databases-packages
 
 ruby:
-  rbenv.installed:
-    - name: {{ pillar['ruby_version'] }}
-    - default: True
-    - runas: {{ pillar['username'] }}
+  pkg.installed:
+    - pkgs:
+      - ruby
+      - rubygems
     - require:
-      - pkg: rbenv-deps
-
-rbenv-adjust_profile:
-  file.append:
-    - name: {{ pillar['homedir'] }}/.profile
-    - user: {{ pillar['username'] }}
-    - group: {{ pillar['username'] }}
-    - text:
-      - export PATH="$HOME/.rbenv/bin:$PATH"
-      - eval "$(rbenv init -)"
-    - require:
-      - rbenv.installed: ruby
-
-base_gems:
+      - pkg: ruby-deps
   gem.installed:
-    - runas: {{ pillar['username'] }}
     - names:
       - bundler
+      - rake
     - require:
-      - file: rbenv-adjust_profile
+      - pkg: ruby
+

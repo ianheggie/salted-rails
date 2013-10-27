@@ -1,4 +1,11 @@
-" source $VIMRUNTIME/mswin.vim
+execute pathogen#infect()
+
+map <C-n> :NERDTreeToggle<CR>
+" open a NERDTree automatically when vim starts up if no files were specified
+" autocmd vimenter * if !argc() | NERDTree | endif
+"
+source $VIMRUNTIME/mswin.vim
+
 if has("gui_running")
 colorscheme murphy
 else

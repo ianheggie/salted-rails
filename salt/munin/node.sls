@@ -24,6 +24,7 @@ munin-node-conf:
         - recurse
         - source: salt://munin/files/node
         - name: /etc/munin
+        - exclude_pat: '.*swp'
 
 # Check Permissions of Plugins to Ensure They Are Executible
 chmod -R 755 /etc/munin/plugins/:

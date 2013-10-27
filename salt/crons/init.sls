@@ -1,6 +1,6 @@
 # include
-include:
-  - users
+#include:
+#  - users
 
 # cron.present
 date > /tmp/croncheck:

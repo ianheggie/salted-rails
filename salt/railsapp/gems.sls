@@ -1,5 +1,5 @@
 include:
-  - lang.ruby
+  - lang.rbenv
 
 tmp_railsapp_gems:
   file.directory:
@@ -9,6 +9,8 @@ tmp_railsapp_gems:
     - group: {{ pillar['username'] }}
     - makedirs: True
     - clean: True
+    - require:
+      - sls: lang.rbenv
 
 railsapp_gems:
   file.recurse:
@@ -17,15 +19,15 @@ railsapp_gems:
     - file_mode: 644
     - user: {{ pillar['username'] }}
     - group: {{ pillar['username'] }}
+    - exclude_pat: '.*swp'
     - require:
       - file.directory: tmp_railsapp_gems
   cmd.run:
     # Run twice if first fails (weirdness with installing ruby-debug)
-    - name: {{ pillar['homedir'] }}/.rbenv/shims/bundle install || {{ pillar['homedir'] }}/.rbenv/shims/bundle install
+    - name: bundle install || bundle install
     - cwd: /tmp/railsapp_gems
     - user: {{ pillar['username'] }}
     - group: {{ pillar['username'] }}
     - require:
       - file: railsapp_gems
-      - gem.installed: base_gems
 

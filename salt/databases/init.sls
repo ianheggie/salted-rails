@@ -1,19 +1,50 @@
 
 include:
-  # MySQL
-{%- if ('mysql' in pillar['gems']) or ('mysql2' in pillar['gems']) %}
+{%- if ('mysql' in pillar['roles']) %}
   - databases.mysql
   - databases.phpmyadmin
 {%- endif %}
-  # PostgreSQL - TODO main alternative to mysql
-  # MongoDB - TODO Document database
-  # CouchDB - TODO json web distributed db
-  # Redis - TODO key value store
-  # Riak - TODO Distributed fault tolerant DB
-  # RabbitMQ - TODO message broker software
-  # Memcached - TODO Memory cache
-  # Cassandra - TODO distributed database management system
-  # Neo4J - TODO Graph database
-  # ElasticSearch - TODO search and analytics engine
-  # Kestrel - TODO light-weight persistent message queue
-  # SQLite3 - Included by default
+{%- if ('postgresql' in pillar['roles']) %}
+  - databases.postgresql
+{%- endif %}
+#{%- if ('sqllite3' in pillar['roles']) %}
+#  # SQLite3 - Included by default
+  - databases.sqlite3
+{%- if 'gui' in pillar['roles'] %}
+  - databases.sqlitebrowser
+{%- endif %}
+#{%- endif %}
+
+# TODO: when I need them:
+
+#{%- if ('memcached' in pillar['roles']) %}
+#  # Memcached - TODO Memory cache
+#{%- endif %}
+
+#{%- if ('mongodb' in pillar['roles']) %}
+#  # MongoDB - TODO Document database
+#{%- endif %}
+#{%- if ('couchdb' in pillar['roles']) %}
+#  # CouchDB - TODO json web distributed db
+#{%- endif %}
+#{%- if ('redis' in pillar['roles']) %}
+#  # Redis - TODO key value store
+#{%- endif %}
+#{%- if ('riak' in pillar['roles']) %}
+#  # Riak - TODO Distributed fault tolerant DB
+#{%- endif %}
+#{%- if ('rabbitmq' in pillar['roles']) %}
+#  # RabbitMQ - TODO message broker software
+#{%- endif %}
+#{%- if ('cassandra' in pillar['roles']) %}
+#  # Cassandra - TODO distributed database management system
+#{%- endif %}
+#{%- if ('neo4j' in pillar['roles']) %}
+#  # Neo4J - TODO Graph database
+#{%- endif %}
+#{%- if ('elasticsearch' in pillar['roles']) %}
+#  # ElasticSearch - TODO search and analytics engine
+#{%- endif %}
+#{%- if ('kestrel' in pillar['roles']) %}
+#  # Kestrel - TODO light-weight persistent message queue
+#{%- endif %}

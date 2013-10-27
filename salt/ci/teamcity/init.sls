@@ -1,38 +1,37 @@
 include:
   - lang.java
-  - www.users
 
 teamcity-download:
   file.directory:
-    - name: /tmp/TeamCity
+    - name: {{ pillar['homedir'] }}/tmp/teamcity
     - makedirs: True
-    - user: www-data
-    - group: www-data
-    - require:
-      - sls: www.users
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
   cmd.run:
-    - name: wget -c http://download.jetbrains.com/teamcity/TeamCity-{{ pillar['teamcity-version'] }}.tar.gz
-    - unless: test -d /var/TeamCity/bin
-    - cwd: /tmp
-    - user: www-data
-    - group: www-data
+    - name: wget -nv -c http://download.jetbrains.com/teamcity/TeamCity-{{ pillar['versions']['teamcity'] }}.tar.gz
+    - unless: test -d {{ pillar['homedir'] }}/local/TeamCity-{{ pillar['versions']['teamcity'] }}/bin
+    - cwd: {{ pillar['homedir'] }}/tmp/teampcity
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - unless: test -d {{ pillar['homedir'] }}/local/TeamCity-{{ pillar['versions']['teamcity'] }}/bin
     - require:
       - file.directory: teamcity-download
 
 teamcity-extract:
   cmd.run:
-    - name: tar xfz /tmp/TeamCity-{{ pillar['teamcity-version'] }}.tar.gz 
-    - cwd: /tmp/TeamCity
-    - user: www-data
-    - group: www-data
+    - name: tar xfz /tmp/TeamCity-{{ pillar['versions']['teamcity'] }}.tar.gz 
+    - cwd: {{ pillar['homedir'] }}/tmp/teampcity
+    - user: {{ pillar['username'] }}
+    - group: {{ pillar['username'] }}
+    - unless: test -d {{ pillar['homedir'] }}/local/TeamCity-{{ pillar['versions']['teamcity'] }}/bin
     - require:
       - cmd: teamcity-download
 
 teamcity-install:
   cmd.run:
-    - name: rm -rf /var/TeamCity && mv /tmp/TeamCity/* /var/TeamCity && rm -fr /tmp/TeamCity
-    - cwd: /tmp
-    - unless: test -d /var/TeamCity/bin
+    - name: mv TeamCity-* ../../TeamCity-{{ pillar['versions']['teamcity'] }}
+    - cwd: {{ pillar['homedir'] }}/tmp/teampcity
+    - unless: test -d {{ pillar['homedir'] }}/local/TeamCity-{{ pillar['versions']['teamcity'] }}/bin
     - require:
       - cmd: teamcity-extract
 
@@ -55,4 +54,5 @@ teamcity:
       - file: {{ pillar['etc_dir'] }}/init.d/teamcity
   require:
     - file: teamcity-setup-service
+    - sls:lang.java
 

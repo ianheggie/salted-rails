@@ -35,9 +35,9 @@ module SaltedRails
         end
       end
       # create_empty_custom_files
-      pillarize_application_configuration
-      fix_hostname(vagrant_config)
+      misc_fixes(vagrant_config)
       configure_salt(vagrant_config)
+      pillarize_application_configuration
     end
 
     def configure_ubuntu_mirror(vagrant_config, config = @config)
@@ -53,9 +53,9 @@ module SaltedRails
       vagrant_config.vm.hostname = config.hostname
     end
 
-    def fix_hostname(vagrant_config, config = @config)
+    def misc_fixes(vagrant_config, config = @config)
       vagrant_config.vm.provision "shell" do |s|
-        s.path = config.salt_root + 'salt/bin/fix_hostname.sh'
+        s.path = config.salt_root + 'salt/bin/misc_fixes.sh'
       end
     end
 
@@ -64,7 +64,7 @@ module SaltedRails
         require 'vagrant-vbguest'
         require 'salted-rails/cloud_vbguest_installer'
         vagrant_config.vbguest.installer = SaltedRails::CloudVbguestInstaller
-        vagrant_config.vbguest.auto_update = false
+        #vagrant_config.vbguest.auto_update = false
         config.logger.info 'Configured vbguest installer' 
       rescue LoadError
         config.logger.info 'Skipping vbguest (plugin not available)' 
@@ -73,9 +73,13 @@ module SaltedRails
 
 
     def configure_virtualbox(vagrant_config, config = @config)
-      config.logger.info 'Configuring virtualbox box (UbuntuCloud_12.04_32bit)' 
-      vagrant_config.vm.box = 'UbuntuCloud_12.04_32bit'
-      vagrant_config.vm.box_url = 'http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-vagrant-i386-disk1.box'
+      config.logger.info "Configuring virtualbox box (#{config.box})" 
+      vagrant_config.vm.box = config.box
+      if config.box == 'preciseCloud32'
+        vagrant_config.vm.box_url = 'http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-vagrant-i386-disk1.box'
+      elsif config.box == 'precise32'
+        vagrant_config.vm.box_url = 'http://files.vagrantup.com/precise32.box'
+      end
     end
 
     def configure_digital_ocean(vagrant_config, config = @config)
@@ -87,7 +91,7 @@ module SaltedRails
         provider.image = 'Ubuntu 12.04 x32'
         provider.region = config.region
         provider.ca_path = config.ca_path if config.ca_path
-        override.vm.synced_folder '.', '/vagrant', :disabled => true if config.disable_vagrant_sync
+        override.vm.synced_folder '.', '/vagrant', :disabled => true unless config.sync_vagrant
         if config.private_key_path
           override.ssh.private_key_path = config.private_key_path
           private_key_name = 'Vagrant ' + config.private_key_path.sub(/~\//, '').sub(/\.ssh\//, '').sub(/^id_/, '').gsub(/\W+/, ' ')
@@ -129,8 +133,10 @@ module SaltedRails
     end
 
     def configure_ports(vagrant_config, port_offset=0, config = @config)
+      config.mapped_ports = { }
       config.ports.each do |port|
         host_port = port_offset + port + (port < 3000 ? 3000 : 0)
+        config.mapped_ports[port] = host_port
         vagrant_config.vm.network :forwarded_port, :guest => port, :host => host_port, auto_correct: true
       end
     end
