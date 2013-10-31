@@ -13,6 +13,17 @@ while (false !== ($entry = $d->read())) {
      }
 }
 $d->close();
+
+function command_exist($cmd) {
+    $returnVal = shell_exec("which $cmd");
+    return !empty($returnVal);
+}
+
+$commands = array('facter' => 'System info', 'df' => 'Disk Free', 'ps' => 'Process Status', 'free' => 'Memory Free Status', 'dpkg' => 'Packages installed', 'ifconfig' => 'Network Interfaces');
+foreach ($commands as $cmd => $desc) {
+   echo '<li><a href="/' . $cmd . '.php">' . $cmd . ' - ' . $desc . "</a>\n";
+}
+
 ?>
 <li><a href="phpinfo.php">phpinfo</a>
 </ul>

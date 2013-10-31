@@ -13,7 +13,7 @@ module SaltedRails
 
     def initialize(config)
       @config = config
-      @config.logger.info "SaltedRails: Helper created with config.rails_root = #{@config.rails_root}"
+      @config.logger.info "SaltedRails: Helper created with config.project_root = #{@config.project_root}"
     end
 
     private
@@ -25,7 +25,7 @@ module SaltedRails
 #
 #      # Create custom files
 #      [ 'pillar/vagrant', 'pillar/capistrano', 'salt/vagrant', 'salt/capistrano'].each do |custom|
-#        file = @config.rails_root + 'config/' + custom + '.sls'
+#        file = @config.project_root + 'config/' + custom + '.sls'
 #        dir = File.dirname(file)
 #        unless File.directory? dir
 #          FileUtils.mkdir_p dir
@@ -41,12 +41,13 @@ module SaltedRails
 
     def pillarize_application_configuration
       @config.logger.info 'SaltedRails: Creating pillar application data' 
+      @config.normalize
 
       # Destination
-      salt_dir = @config.rails_root + 'tmp/salt/'
+      salt_dir = @config.project_root + 'tmp/salt/'
       FileUtils.rm_rf salt_dir if File.directory? salt_dir
       FileUtils.mkdir_p salt_dir unless File.directory? salt_dir
-      pillar_dir = @config.rails_root + 'tmp/pillar/'
+      pillar_dir = @config.project_root + 'tmp/pillar/'
       FileUtils.rm_rf pillar_dir if File.directory? pillar_dir
       FileUtils.mkdir_p pillar_dir unless File.directory? pillar_dir
       pillar_app_file = pillar_dir + 'railsapp.sls'
@@ -57,12 +58,12 @@ module SaltedRails
         unless File.directory? dir
           FileUtils.mkdir_p dir
         end
-        FileUtils.cp(@config.rails_root + f, dest)
+        FileUtils.cp(@config.project_root + f, dest)
       end
       dest = salt_dir + 'packages.txt'
       if @config.packages
         src = @config.packages
-        src = @config.rails_root + src unless src =~ /^\//
+        src = @config.project_root + src unless src =~ /^\//
         dir = File.dirname(dest)
         unless File.directory? dir
           FileUtils.mkdir_p dir
@@ -92,7 +93,7 @@ module SaltedRails
       File.open(pillar_app_file, 'w') do |f_out|
         if_command = 'if'
         @config.machines.each do |machine_config|
-          f_out.puts "{% #{if_command} grains['fqdn'] == '#{machine_config.hostname}' %}"
+          f_out.puts "{% #{if_command} (grains['fqdn'] == '#{machine_config.hostname}') or (grains['fqdn'] == '#{machine_config.machine}') %}"
           if_command = 'elif'
           f_out.puts machine_config.to_yaml
         end

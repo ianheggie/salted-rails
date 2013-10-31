@@ -12,6 +12,7 @@ module SaltedRails
     end
 
     def configure_vagrant(vagrant_config)
+      @config.normalize
       port_offset = 0
       configure_virtualbox(vagrant_config)
       configure_vbguest(vagrant_config)
@@ -109,10 +110,10 @@ module SaltedRails
 
     def configure_salt(vagrant_config, config = @config)
       config.logger.info "Configuring saltstack (#{config.machine})"
-      vagrant_config.vm.synced_folder config.rails_root + 'config/salt/', '/srv/salt/config/'
-      vagrant_config.vm.synced_folder config.rails_root + 'config/pillar/', '/srv/pillar/config/'
-      vagrant_config.vm.synced_folder config.rails_root + 'tmp/salt/', '/srv/salt/generated/'
-      vagrant_config.vm.synced_folder config.rails_root + 'tmp/pillar/', '/srv/pillar/generated/'
+      vagrant_config.vm.synced_folder config.project_root + 'config/salt/', '/srv/salt/config/'
+      vagrant_config.vm.synced_folder config.project_root + 'config/pillar/', '/srv/pillar/config/'
+      vagrant_config.vm.synced_folder config.project_root + 'tmp/salt/', '/srv/salt/generated/'
+      vagrant_config.vm.synced_folder config.project_root + 'tmp/pillar/', '/srv/pillar/generated/'
       vagrant_config.vm.synced_folder config.salt_root + 'salt/', '/srv/salt/salted-rails/'
       vagrant_config.vm.synced_folder config.salt_root + 'pillar/', '/srv/pillar/salted-rails/'
       # Bootstrap salt
@@ -120,7 +121,7 @@ module SaltedRails
       # Provisioning #2: masterless highstate call
       vagrant_config.vm.provision :salt do |salt|
         config.logger.info 'Configuring salt provisioner'
-        minion_file = config.rails_root + 'config/salt/vagrant/minion'
+        minion_file = config.project_root + 'config/salt/vagrant/minion'
         minion_file = config.salt_root + 'salt/vagrant/minion' unless File.exist?(minion_file)
         salt.minion_config = minion_file
         salt.run_highstate = true
@@ -128,7 +129,8 @@ module SaltedRails
         # current package (salt-minion_0.17.0.1-1precise_all.deb) in ppa:saltstack/salt is broken as of Oct 10 2013:
         # Unable to run multiple states and returns unhelpfull messages about list and get
         salt.install_type = 'git'
-        salt.install_args = 'v0.16.4'
+        #salt.install_args = 'v0.16.4'
+        salt.install_args = 'v0.17.1'
       end
     end
 

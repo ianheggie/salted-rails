@@ -3,13 +3,14 @@ base:
     - apt.partner-sources
     - apt.unwanted
     - apt.load_packages
+    - apt.dist_upgrade
+    - apt.salt_packages
     - vagrant.minion
     - www.users
     - utils
     - crons
     - net.hosts
     - net.ntp
-    - net.ufw
     - scm
     - editors.vim
     - lang.ruby
@@ -38,12 +39,23 @@ base:
     - editors.gvim
     - www.chromium
 {%- endif %}
-{%- if 'rubymine' in pillar['versions'] %}
+{%- if 'rubymine' in pillar['roles'] %}
     - editors.rubymine
 {%- endif %}
-{%- if 'teamcity' in pillar['versions'] %}
+{%- if 'teamcity' in pillar['roles'] %}
     - ci.teamcity
 {%- endif %}
 {%- if 'cruisecontrolrb' in pillar['roles'] %}
     - ci.cruisecontrolrb
 {%- endif %}
+{%- if 'secure' in pillar['roles'] %}
+    - net.ufw
+    #TODO: net.fail2ban
+{%- endif %}
+{%- if 'monitored' in pillar['roles'] %}
+    #TODO: - server.monit
+    #TODO: - server.munin
+{%- endif %}
+
+# # cookbook 'ack' ?
+

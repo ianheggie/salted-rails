@@ -100,20 +100,4 @@ admin-user:
     - require:
       - file: {{ pillar['etc_dir'] }}/nginx/admin.d/htpasswd
 
-#  module.run:
-#    - name: apache.useradd
-#    - pwfile: {{ pillar['etc_dir'] }}/nginx/admin.d/htpasswd
-#    - user: 'admin'
-#    - password: '{{ pillar['admin_password'] }}'
-#    - require:
-#      - file: {{ pillar['etc_dir'] }}/nginx/admin.d/htpasswd
-#
-# Unfortunately this produces an error even when htpasswd is present:
-#    State: - module
-#    Name:      apache.useradd
-#    Function:  run
-#        Result:    False
-#        Comment:   Module function apache.useradd is not available
-#        Changes:
-
 {%- endif %}

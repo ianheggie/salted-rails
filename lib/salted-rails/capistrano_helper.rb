@@ -10,7 +10,7 @@ require 'salted-rails/helper_base'
 module SaltedRails
   class CapistranoHelper < HelperBase
 
-    def initialize(rails_root, logger = Log4r::Logger.new("salted_rails::capistrano_helper"))
+    def initialize(project_root, logger = Log4r::Logger.new("salted_rails::capistrano_helper"))
       super(rail_root, logger)
     end
 
@@ -55,7 +55,7 @@ module SaltedRails
 #      # Provisioning #2: masterless highstate call
 #      config.vm.provision :salt do |salt|
 #        @logger.info 'Configuring salt provisioner'  if @logger
-#        minion_file = @rails_root + 'config/salt/vagrant/minion'
+#        minion_file = @project_root + 'config/salt/vagrant/minion'
 #        minion_file = @salt_root + 'salt/vagrant/minion' unless File.exists? minion_file
 #        salt.minion_config = minion_file
 #        salt.run_highstate = true
@@ -75,7 +75,7 @@ module SaltedRails
 #      configure_memory(memory)
 #      vm_config.vm.boot_mode == :gui 
 #      vm_config.vm.provision :salt do |salt|
-#        minion_file = @rails_root + 'config/salt/vagrant/gui_minion'
+#        minion_file = @project_root + 'config/salt/vagrant/gui_minion'
 #        minion_file = @salt_root + 'salt/vagrant/gui_minion' unless File.exists? minion_file
 #        salt.minion_config = minion_file
 #      end
