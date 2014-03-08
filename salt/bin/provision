@@ -13,28 +13,32 @@ runit()
 	0)
 		echo "Running all states ..."
 		sudo salt-call saltutil.sync_all
-		sudo salt-call state.highstate 
+		sudo salt-call --retcode-passthrough state.highstate 
+		ret=$?
+		echo "exit status: $ret"
 		;;
 	*)
 		for file; do
 			echo "Running $file ..."
-			sudo salt-call state.sls "$file"
+			sudo salt-call --retcode-passthrough state.sls "$file"
+			ret=$?
+			echo "exit status: $ret"
 		done
 		;;
 	esac
 }
 case "$1" in
 run)
+        ret=
 	shift
         if $no_check; then
                 # Color is used when there is no checking (piped output)
                 runit "$@"
-                exit
+                exit $ret
         fi
         runit "$@" 2>&1 | tee /tmp/t$$
         echo
         echo Checking results log:
-        ret=
         if egrep '^\[ERROR *\]' /tmp/t$$; then
                 echo ERROR: `egrep '^\[ERROR *\]' /tmp/t$$ | wc -l` ERRORS FOUND IN LOG
                 ret=1

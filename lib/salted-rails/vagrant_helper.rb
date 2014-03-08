@@ -27,7 +27,7 @@ module SaltedRails
         @config.machines.each do |machine_config|
           machine_config.logger.info "Configuring machine #{machine_config.machine}, hostname: #{machine_config.hostname}"
           vagrant_config.vm.define(machine_config.machine.to_sym) do |vagrant_vm_config|
-            configure_gui(vagrant_vm_config) if @config.gui?
+            configure_gui(vagrant_vm_config) if machine_config.gui?
             configure_hostname(vagrant_vm_config, machine_config)
             configure_ports(vagrant_vm_config, port_offset, machine_config)
             configure_memory(vagrant_vm_config, machine_config.memory, machine_config)

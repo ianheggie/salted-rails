@@ -53,7 +53,12 @@ module SaltedRails
       @private_key_path = nil
       @mirror = nil
       @memory = nil
-      @ports = [ 80, 443, 880, 3000 ]
+
+      # app in production mode: 80, 443
+      # admin: 880
+      # app in dev mode: 3000
+      # gem server: 8808
+      @ports = [ 80, 443, 880, 3000, 8808 ]
       @mapped_ports = { }
       @sync_vagrant = nil
       @box = nil
@@ -165,7 +170,7 @@ module SaltedRails
       @versions['mysql'] ||= '5.5' if @roles.include?('mysql')
       @versions['teamcity'] ||= '8.0.4' if @roles.include?('teamcity')
       @versions['rubymine'] ||= '5.4.3' if @roles.include?('rubymine')
-      @roles << 'gui' if @roles.include?('rubymine') and not @roles.include?('gui')
+      @roles << 'gui' if @roles.include?('rubymine') and not gui?
 
       %w{ ruby php java }.each do |lang|
         version = File.open(@project_root + ".#{lang}-version", 'r') do |f_in|
