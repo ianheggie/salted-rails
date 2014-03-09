@@ -29,7 +29,7 @@ describe 'init.sh' do
           it { should =~ /plugin #{plugin}/ }
         end
       else
-        it { should =~ /Plase install vagrant/ }
+        it { should =~ /Please install vagrant/ }
       end
 
       if system 'which VirtualBox > /dev/null'

@@ -6,7 +6,7 @@ if which VirtualBox; then
   echo Found VirtualBox
   VirtualBox --help | line
 else
-  echo 'ACTION REQUIRED: Please install Virtualbox 4.2.18 or later from https://www.virtualbox.org/wiki/Downloads'
+  echo 'ACTION REQUIRED: Please install VirtualBox 4.2.18 or later from https://www.virtualbox.org/wiki/Downloads'
   msg='(PLEASE RERUN SCRIPT AFTERWARDS)'
 fi
 
