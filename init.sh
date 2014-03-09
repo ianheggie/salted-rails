@@ -3,7 +3,7 @@
 msg='OK: Vagrant has been setup: ready for vagrant up [--provider=digital_ocean]'
 
 if which VirtualBox; then
-  echo Found Virtualbox
+  echo Found VirtualBox
   VirtualBox --help | line
 else
   echo 'ACTION REQUIRED: Please install Virtualbox 4.2.18 or later from https://www.virtualbox.org/wiki/Downloads'
@@ -19,8 +19,10 @@ if which vagrant; then
   for plugin in deep_merge vagrant-digitalocean vagrant-vbguest salted-rails
   do
     if grep $plugin < /tmp/t$$; then
+      echo Updating plugin $plugin
       vagrant plugin update $plugin
     else
+      echo Installing plugin $plugin
       vagrant plugin install $plugin
     fi
   done
@@ -46,14 +48,16 @@ fi
 
 mkdir -p "$HOME/.vagrant.d"
 
-if [ -f "$HOME/.vagrant.d/Vagrantfile" ]; then
-  echo Found global Vagrantfile
+global_Vagrantfile="$HOME/.vagrant.d/Vagrantfile"
+if [ -f "$global_Vagrantfile" ]; then
+  echo Found global Vagrantfile: $global_Vagrantfile
 else
-  echo "About to set up ~/.vagrant.d/Vagrantfile"
+  echo "About to set up $global_Vagrantfile"
   echo -n "Enter your digital ocean client key (defaul none): "
   read client_id
   echo -n "Enter your digital ocean API key (defaul none): "
   read api_key
+  if [ -n "$client_id" -a -n "$api_key" ] ; then
   echo "
 Vagrant.configure('2') do |config|
   config.vm.provider :digital_ocean do |provider|
@@ -61,7 +65,8 @@ Vagrant.configure('2') do |config|
     provider.api_key = '$api_key'
   end
 end
-" > $HOME/.vagrant.d/Vagrantfile
+" > $global_Vagrantfile
+  fi
 fi
 echo
 echo "$msg"
