@@ -1,0 +1,18 @@
+language: ruby
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+
+before_install:
+  - test/install_vagrant
+  - test/install_other_plugins
+  - test/install_this_plugin
+
+bundler_args: "--binstubs"
+
+script: bin/rspec
+
+rvm: 
+  - 2.0.0
+

@@ -1,6 +1,3 @@
-# OS-specific
-.DS_Store
-
 # Vagrant stuff
 acceptance_config.yml
 boxes/*
@@ -15,26 +12,12 @@ tags
 /Gemfile.lock
 test/tmp/
 
+/bin
+
 # Documentation
 _site/*
 .yardoc/
 doc/
-
-# Python
-*.pyc
-
-# Rubinius
-*.rbc
-
-# IDE junk
-.idea/*
-*.iml
-
-# Ruby Managers
-.rbenv
-.ruby-gemset
-.ruby-version
-.rvmrc
 
 # Website: docs
 website/docs/.sass-cache
@@ -50,7 +33,5 @@ website/www/Rakefile
 /salt/railsapp/files
 /pillar/application.sls
 
-# Temp files
-,*
-*~
-
+# See: https://gist.github.com/ianheggie/9327010
+# for Global git ignore for OS/IDE/temp/backup files
