@@ -31,8 +31,8 @@ I am thinking of doing the following in the future:
 
 Download init.sh script and run:
 
-  $ wget https://raw.github.com/ianheggie/salted-rails/master/init.sh
-  $ sh init.sh
+    $ wget https://raw.github.com/ianheggie/salted-rails/master/init.sh
+    $ sh init.sh
 
 This will:
 
