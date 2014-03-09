@@ -5,14 +5,15 @@ notifications:
     on_failure: always
 
 before_install:
-  - test/install_vagrant
-  - test/install_other_plugins
-  - test/install_this_plugin
+  - gem update --system $RUBYGEMS_VERSION
+  - gem --version
+  - gem install bundler
+  - bundle --version
 
 bundler_args: "--binstubs"
 
 script: bin/rspec
 
 rvm: 
-  - 2.0.0
+  - 1.9.3
 

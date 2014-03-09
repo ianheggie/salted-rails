@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# Installs vagrant if it is missing
+
+if which vagrant && vagrant -v ; then
+  echo 'found vagrant!'
+else
+  wget https://dl.bintray.com/mitchellh/vagrant/vagrant_1.4.3_x86_64.deb
+  sudo dpkg -i vagrant_1.4.3_x86_64.deb
+fi
