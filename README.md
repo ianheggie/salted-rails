@@ -20,10 +20,7 @@ This configures vagrant in the way that I personally like:
 * forward post 3000, 80, 443
 * Include fix vbguest fix for upgrading virtualbox additions with ubunutu cloud
 
-I am thinking of doing the following in the future:
-* Configuring up vim with a standard set of plugins
-* Expand it for use with capistrano (for deployment to staging and production servers), including hardening up the server for security
-* Expand it to construct continuous testing / delivery servers
+**I am currently investigating ansible and alternative approaches, so this project is currently on hold**
 
 ## Installation
 
