@@ -36,7 +36,7 @@ describe 'init.sh' do
         it { should =~ /Found VirtualBox/ }
         it { should =~ /VirtualBox\D+\d+\.\d+\.\d+/ }
       else
-        it { should =~ /Plase install VirtualBox/ }
+        it { should =~ /Please install VirtualBox/ }
       end
 
     end
